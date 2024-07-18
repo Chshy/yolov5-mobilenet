@@ -69,6 +69,27 @@ def autopad(k, p=None, d=1):
         p = k // 2 if isinstance(k, int) else [x // 2 for x in k]  # auto-pad
     return p
 
+# # # Modified 2024.7.9 ↓
+
+from torchvision.models import mobilenet_v3_small, MobileNet_V3_Small_Weights
+
+class MobileNetV3Slice(nn.Module):
+
+    # slice是左闭右开区间[start, end); 从0开始; 留空为None则表示头/尾(类似list)
+    def __init__(self, start = None, end = None, pretrained = True):
+        super(MobileNetV3Slice, self).__init__()
+
+        # 从torchvision读取完整的模型(features部分), 然后切割
+        if pretrained:
+            self.model = mobilenet_v3_small(weights = MobileNet_V3_Small_Weights.IMAGENET1K_V1).features[start:end]
+        else:
+            self.model = mobilenet_v3_small().features[start:end]
+
+    def forward(self, x):
+        return self.model(x)
+        
+# # # Modified 2024.7.9 ↑
+
 
 class Conv(nn.Module):
     # Standard convolution with args(ch_in, ch_out, kernel, stride, padding, groups, dilation, activation)
