@@ -48,6 +48,7 @@ from models.common import (
     GhostBottleneck,
     GhostConv,
     Proto,
+    MobileNetV3Slice
 )
 from models.experimental import MixConv2d
 from utils.autoanchor import check_anchor_order
@@ -439,6 +440,11 @@ def parse_model(d, ch):
             c2 = ch[f] * args[0] ** 2
         elif m is Expand:
             c2 = ch[f] // args[0] ** 2
+        # # # Modified 2024.7.9 ↓
+        elif m is MobileNetV3Slice:
+            c2 = args[0]
+            args = args[1:] # 这部分才是真正传给MobileNetV3Slice的__init__函数的参数
+        # # # Modified 2024.7.9 ↑
         else:
             c2 = ch[f]
 
